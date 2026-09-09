@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pencarian Tarif Puskesmas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6F3EC;
+    --paper:#FFFFFF;
+    --ink:#1F2A22;
+    --ink-soft:#5B6459;
+    --teal:#2E5D4F;
+    --teal-deep:#1D4137;
+    --gold:#B9863A;
+    --line:#E3DFD1;
+    --line-soft:#EDEAE0;
+    --tag-bg:#EAF0EC;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:820px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+  }
+  header{
+    padding-bottom:28px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .kop{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:2.1rem;
+    line-height:1.15;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:0.98rem;
+    margin:0;
+    max-width:46ch;
+  }
+  .legal{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--teal-deep);
+    background:var(--tag-bg);
+    padding:4px 10px;
+    border-radius:3px;
+    white-space:nowrap;
+  }
+
+  .search-box{
+    position:relative;
+    margin-bottom:6px;
+  }
+  .search-box input{
+    width:100%;
+    font-family:'Fraunces', serif;
+    font-size:1.35rem;
+    font-weight:400;
+    padding:14px 44px 14px 4px;
+    border:none;
+    border-bottom:2px solid var(--teal);
+    background:transparent;
+    color:var(--ink);
+    outline:none;
+  }
+  .search-box input::placeholder{
+    color:#9AA394;
+    font-style:italic;
+  }
+  .search-box svg{
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    width:20px;
+    height:20px;
+    stroke:var(--ink-soft);
+    pointer-events:none;
+  }
+  .clearbtn{
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    font-size:1.1rem;
+    cursor:pointer;
+    display:none;
+    padding:4px;
+  }
+  .search-box.has-text .clearbtn{display:block;}
+  .search-box.has-text svg{display:none;}
+
+  .meta-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:14px 0 22px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .meta-row span.count b{color:var(--teal-deep);}
+
+  .chips{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:26px;
+  }
+  .chip{
+    font-size:0.78rem;
+    padding:5px 11px;
+    border-radius:100px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .15s ease;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .chip:hover{border-color:var(--teal);color:var(--teal-deep);}
+  .chip.active{
+    background:var(--teal-deep);
+    border-color:var(--teal-deep);
+    color:#fff;
+  }
+
+  .group{margin-bottom:8px;}
+  .group-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.02em;
+    color:var(--gold);
+    padding:22px 0 8px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:2px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .group-title .n{color:#B8AF98;}
+
+  .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:16px;
+    padding:13px 2px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .row:last-child{border-bottom:none;}
+  .row .name{
+    font-size:0.98rem;
+    line-height:1.4;
+    color:var(--ink);
+  }
+  .row .name .sub-label{
+    display:block;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    margin-top:2px;
+    font-style:italic;
+  }
+  .row .price{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.92rem;
+    font-weight:500;
+    color:var(--teal-deep);
+    white-space:nowrap;
+  }
+  mark{
+    background:#F3DFA8;
+    color:inherit;
+    padding:0 1px;
+    border-radius:2px;
+  }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty .big{
+    font-family:'Fraunces', serif;
+    font-size:1.3rem;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+
+  footer{
+    margin-top:50px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:0.76rem;
+    color:#9AA394;
+    text-align:center;
+  }
+
+  @media (max-width:520px){
+    h1{font-size:1.6rem;}
+    .kop{flex-direction:column;align-items:flex-start;}
+    .wrap{padding:26px 16px 60px;}
+    .row .name{font-size:0.92rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <div>
+        <h1>Tarif Layanan Puskesmas</h1>
+        <p class="sub">Cari layanan dengan kata kunci untuk melihat tarif resminya.</p>
+      </div>
+      <span class="legal">Perda No. 02 Tahun 2025</span>
+    </div>
+  </header>
+
+  <div class="search-box" id="searchBox">
+    <input type="text" id="searchInput" placeholder="Ketik nama layanan, mis. “jahit luka” atau “gigi”…" autofocus>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <button class="clearbtn" id="clearBtn" aria-label="Hapus pencarian">✕</button>
+  </div>
+
+  <div class="meta-row">
+    <span class="count"><b id="resultCount">0</b> layanan ditemukan</span>
+    <span id="filterLabel"></span>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div id="results"></div>
+</div>
+
+<footer>Sumber data: Peraturan Daerah Nomor 02 Tahun 2025 · Tarif dapat berubah sesuai ketentuan yang berlaku.</footer>
+
+<script>
+const DATA = [{"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Rawat jalan umum", "tarif": 25000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan Kesehatan Jasmani", "tarif": 20000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan buta warna", "tarif": 20000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan visus mata", "tarif": 13000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan visum luar", "tarif": 50000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan Spirometri", "tarif": 30000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan Co Analyzer", "tarif": 30000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Tindakan Injeksi", "tarif": 25000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Mantoux test", "tarif": 23000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pemeriksaan HRV", "tarif": 100000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Injeksi benzatin penicillin", "tarif": 100000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Anuskopi", "tarif": 50000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Puskesmas Keliling", "tarif": 25000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "Pelayanan tes kebugaran", "tarif": 50000}, {"kategori": "Poliklinik Umum", "subkategori": "POLIKLINIK UMUM", "layanan": "EKG", "tarif": 55000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Infra Red (IR)", "tarif": 29000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Micro Wave Diathermi (MWD)", "tarif": 37000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Short Wave Diathermi (SWD)", "tarif": 42000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Electro Stimulasi (ES)", "tarif": 33000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Ultra Sound Diathermi (USD)", "tarif": 32000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Ice Massage", "tarif": 26000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Massage lokal", "tarif": 26000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Massage bayi < 1 Tahun", "tarif": 46000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Massage bayi 1-3 Tahun", "tarif": 55000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Exercise Ringan", "tarif": 38000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Exercise Berat", "tarif": 40000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Chest Terapi", "tarif": 30000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Konsultasi Fisioterapis", "tarif": 19000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Assesment Fisioterapi pada tumbuh kembang anak", "tarif": 20000}, {"kategori": "Fisioterapi", "subkategori": "REHAB MEDIK /FISIO", "layanan": "Parafin Bath", "tarif": 25000}, {"kategori": "Layanan P3K", "subkategori": "LAYANAN P3K (PER 8 JAM)", "layanan": "Dokter", "tarif": 200000}, {"kategori": "Layanan P3K", "subkategori": "LAYANAN P3K (PER 8 JAM)", "layanan": "Perawat", "tarif": 150000}, {"kategori": "Layanan P3K", "subkategori": "LAYANAN P3K (PER 8 JAM)", "layanan": "Driver", "tarif": 75000}, {"kategori": "Layanan P3K", "subkategori": "LAYANAN P3K (PER 8 JAM)", "layanan": "Obat", "tarif": 150000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Darah lengkap (Hb, Hmt, AT, AL, AE, Diftel)", "tarif": 60000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Hemoglobin (Hb)", "tarif": 20000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Angka Lekosit (AL)", "tarif": 22000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Angka Eritrosit (AE)", "tarif": 26000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Angka Trombosit (AT)", "tarif": 18000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Hematokrit (Hmt)", "tarif": 14000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Diftel (Hitung Jenius Lekosit)", "tarif": 22000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Laju Endap Darah (LED)", "tarif": 18000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Retikulosit", "tarif": 24000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Limfosit Plasma Biru (LPB)", "tarif": 22000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "HbA1C", "tarif": 160000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Malaria", "tarif": 21000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Golongan Darah", "tarif": 17000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Masa Perdarahan/Blood Time (BT)", "tarif": 19000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Masa Pembekuan Darah/ (CT)", "tarif": 19000}, {"kategori": "Laboratorium", "subkategori": "Hematologi", "layanan": "Fibrinogen", "tarif": 35000}, {"kategori": "Laboratorium", "subkategori": "Urin", "layanan": "NAPZA", "tarif": 80000}, {"kategori": "Laboratorium", "subkategori": "Urin", "layanan": "Urin lengkap (stik)", "tarif": 10000}, {"kategori": "Laboratorium", "subkategori": "Urin", "layanan": "Urin sedimen", "tarif": 20000}, {"kategori": "Laboratorium", "subkategori": "Feses", "layanan": "Feses lengkap", "tarif": 20000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "Glukosa (sewaktu, puasa, 2 jam post prandial)", "tarif": 24000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "Asam Urat", "tarif": 26000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "Cholesterol", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "Trigliserida", "tarif": 35000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "HDL", "tarif": 35000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "LDL", "tarif": 35000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "SGOT", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "SGPT", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "Ureum", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Kimia Klinik", "layanan": "kreatinin", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Widal", "tarif": 23000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "HbsAg", "tarif": 42000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Tes Kehamilan", "tarif": 21000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Pemeriksaan Anti HIV", "tarif": 60000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "RPR", "tarif": 60000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Anti TP", "tarif": 25000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Anti HCV (non Program)", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Dengue combo", "tarif": 62000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Anti Leptospira", "tarif": 55000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "RDT Malaria", "tarif": 20000}, {"kategori": "Laboratorium", "subkategori": "Serologi/Imunologi", "layanan": "Tubex TF", "tarif": 100000}, {"kategori": "Laboratorium", "subkategori": "Pemeriksaan Molekuler", "layanan": "Viral Load HIV", "tarif": 450000}, {"kategori": "Laboratorium", "subkategori": "Pemeriksaan Molekuler", "layanan": "TCM TB", "tarif": 150000}, {"kategori": "Laboratorium", "subkategori": "Pemeriksaan Molekuler", "layanan": "PCR Covid", "tarif": 275000}, {"kategori": "Laboratorium", "subkategori": "Bakteriologi", "layanan": "Preparat Batang Tahan Asam (BTA)", "tarif": 14000}, {"kategori": "Laboratorium", "subkategori": "Bakteriologi", "layanan": "Preparat Jamur", "tarif": 31000}, {"kategori": "Laboratorium", "subkategori": "Bakteriologi", "layanan": "Preparat Trichomonas", "tarif": 31000}, {"kategori": "Laboratorium", "subkategori": "Bakteriologi", "layanan": "Preparat Gram", "tarif": 30000}, {"kategori": "Laboratorium", "subkategori": "Pemeriksaan Covid 19", "layanan": "Pemeriksaan Rapid Test Diagnostic (RDT) Antibodi", "tarif": 75000}, {"kategori": "Laboratorium", "subkategori": "Pemeriksaan Covid 19", "layanan": "Pemeriksaan Rapid Test Diagnostic (RDT) Antigen – Swab", "tarif": 150000}, {"kategori": "Laboratorium", "subkategori": "Pemeriksaan Covid 19", "layanan": "Pengiriman Sampel dan Pengambilan Hasil Swab Naso/Oropharynx", "tarif": 130000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Nebulizer Anak", "tarif": 76000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Nebulizer Dewasa", "tarif": 97000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Tindik Telinga Estetika 1 Kali", "tarif": 20000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Reposisi Daun Telinga (Dawir)", "tarif": 76000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Operasi tumor jinak superfisial", "tarif": 119500}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Insisi/Eksisi", "tarif": 88500}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Sirkumsisi", "tarif": 450000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Ekstraksi Kuku", "tarif": 106000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Ekstraksi Corpus Alienum di Mata", "tarif": 27000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Ekstraksi Corpus Alienum di Hidung", "tarif": 23000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Ekstraksi Corpus Alienum di Telinga (ct: cerumen prop)", "tarif": 63000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka sederhana (satu tempat, terlokalisir, luas tidak lebih dari 5 cm)", "tarif": 35000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka kompleks (lebih dari satu tempat, dan/atau luas lebih dari 5 cm)", "tarif": 85000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka DM/ulkus DM sederhana (satu tempat, luas tidak lebih dari 5 cm)", "tarif": 71000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka DM/ulkus DM kompleks (lebih dari satu tempat dan/atau lebih dari 5 cm)", "tarif": 142000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka kronis (lama luka lebih dari 2 minggu)", "tarif": 85000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Jahit luka 1-4 jahitan", "tarif": 49000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Jahit luka 5-10 jahitan", "tarif": 72000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Jahit luka > 10 jahitan", "tarif": 88000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka bakar < 10%", "tarif": 71000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan luka bakar 10%-20% tanpa komplikasi", "tarif": 90000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Premedikasi luka bakar dengan komplikasi pra rujukan", "tarif": 129000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Premedikasi dislokasi sederhana/tertutup pra rujukan", "tarif": 117000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Pemasangan Infus set", "tarif": 48000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Pemasangan Transfusi set", "tarif": 50000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Pemasangan kateter", "tarif": 50000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Rectal Toucher (RT)", "tarif": 26000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan gigitan binatang", "tarif": 22000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan sengatan binatang", "tarif": 22000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Lepas jahitan 1 – 5", "tarif": 22000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Lepas jahitan > 5", "tarif": 25000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Oksigenasi 2 jam pertama", "tarif": 36000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Oksigenasi per jam berikutnya", "tarif": 36000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Anti Tetanus Serum (ATS)", "tarif": 110000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Anti Bisa Ular (ABU)", "tarif": 150000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Vaksin Anti Rabies (VAR)", "tarif": 150000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Tindakan Pembidaian/Fixasi satu lokasi", "tarif": 75000}, {"kategori": "UGD / Ruang Tindakan", "subkategori": "RUANG TINDAKAN", "layanan": "Perawatan Post Partum", "tarif": 500000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Dokter Ahli", "tarif": 30000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Dokter Umum", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Psikolog tanpa assessment", "tarif": 26000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Psikolog dengan assessment", "tarif": 32000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Keperawatan", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi KB-Reproduksi", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Gizi", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Sanitasi", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Gaya Hidup", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Fisioterapi", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Obat", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Upaya Berhenti Merokok (UBM)", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi kesehatan tradisional komplementer herbal", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Pengobatan kesehatan tradisional komplementer herbal", "tarif": 20000}, {"kategori": "Konsultasi", "subkategori": "KONSULTASI", "layanan": "Konsultasi Kesehatan Olahraga", "tarif": 20000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pemeriksaan gigi dan mulut", "tarif": 30000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Premedikasi", "tarif": 30000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Trepanasi", "tarif": 30000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Konsultasi", "tarif": 18000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi susu topical anestesi", "tarif": 36000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi anak dengan komplikasi (mis: ulkus dekubitus)", "tarif": 40000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi susu dengan citoject", "tarif": 75000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi permanen spuit disposable", "tarif": 70000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi Permanen spuit disposable dengan penyulit", "tarif": 89000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi permanen dengan citoject", "tarif": 86000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pencabutan gigi permanen cytoject dengan penyulit", "tarif": 110000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Perawatan dry socket", "tarif": 60000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Penambalan gigi glass ionomer 1 bidang", "tarif": 80000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Penambalan gigi glass ionomer 2 bidang", "tarif": 90000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Penambalan gigi glass ionomer > 2 bidang", "tarif": 98000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Penambalan gigi dengan resin komposit 1 bidang", "tarif": 110000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Tambalan gigi dengan resin komposit 2 bidang", "tarif": 127000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Penambalan gigi dengan resin komposit > 2 bidang", "tarif": 147000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Perawatan pulpa capping", "tarif": 44000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Perawatan syaraf A (devitalisasi pulpa)", "tarif": 49000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Perawatan syaraf B (strerilisai kamar pulpa)", "tarif": 44000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Perawatan syaraf C (pengisian kamar pulpa)", "tarif": 54000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Dislokasi mandibula", "tarif": 68000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Alveolectomi", "tarif": 84000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Operculectomi", "tarif": 102000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Operasi gigi", "tarif": 220000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Insisi abses", "tarif": 37000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Koreksi oklusi", "tarif": 38000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Lepas fixed denture", "tarif": 62000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Penanganan kasus perdarahan gigi dan mulut", "tarif": 86000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Jahit kasus gigi dan mulut", "tarif": 95000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Lepas jahitan kasus gigi", "tarif": 46000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Pembersihan karang gigi per regio", "tarif": 55000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Imobilisasi (-5 gigi)", "tarif": 77000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Lepas splinting per regio", "tarif": 26000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Topical Aplikasi Fluor", "tarif": 84000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Fisure sealant", "tarif": 50000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Koreksi ulkus decubitus", "tarif": 30000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Curetase poket ( dengan perawatan)", "tarif": 45000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Eksisi polip gingiva", "tarif": 41000}, {"kategori": "Poliklinik Gigi & Mulut", "subkategori": "POLIKLINIK GIGI DAN MULUT", "layanan": "Polising dan finishing post scalling", "tarif": 22000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemeriksaan KIA (ANC/ Ibu hamil, Nifas, Bayi, Balita)", "tarif": 25000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemasangan IUD", "tarif": 200000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pencabutan IUD tanpa penyulit", "tarif": 100000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pencabutan IUD dengan Penyulit", "tarif": 150000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Kontrol IUD", "tarif": 50000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Bongkar pasang IUD tanpa penyulit", "tarif": 250000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Bongkar pasang Implant tanpa penyulit", "tarif": 350000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Bongkar pasang IUD dengan penyulit", "tarif": 300000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Bongkar pasang implat dengan penyulit", "tarif": 400000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Penyabutan implant dengan penyulit", "tarif": 250000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pengambilan sampel secret vagina", "tarif": 35000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Krioterapi", "tarif": 200000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Perawatan Post Partum+BBL", "tarif": 350000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemasangan Implant tanpa penyulit", "tarif": 200000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pencabutan Implant tanpa penyulit", "tarif": 200000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Suntik KB", "tarif": 25000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pil KB", "tarif": 20000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Kondom KB", "tarif": 20000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Vaginal Toucher (VT)", "tarif": 35000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemeriksaan Pap Smear", "tarif": 150000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemeriksaan IVA", "tarif": 50000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Deteksi Dini Tumbuh Kembang Balita", "tarif": 25000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Tindik telinga bayi", "tarif": 20000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "ANC Terpadu (Ketentuan berlaku)", "tarif": 250000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemeriksaan caten pria", "tarif": 85000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemeriksaan caten wanita", "tarif": 125000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Konseling KIA", "tarif": 20000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Inspekulo Vagina", "tarif": 35000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "USG", "tarif": 70000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Perawatan luka implan, post SC, post MOW", "tarif": 35000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Vaksinasi Influenza", "tarif": 145000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Vaksin Covid-19", "tarif": 145000}, {"kategori": "KIA / KB / Imunisasi", "subkategori": "POLIKLINIK KIA/KB/IMUNISASI", "layanan": "Pemeriksaan Kesehatan Anak Terintegrasi (PKAT)", "tarif": 75000}]
+;
+
+const fmt = (n) => 'Rp ' + n.toLocaleString('id-ID');
+
+const categories = [...new Set(DATA.map(d => d.kategori))];
+
+const searchInput = document.getElementById('searchInput');
+const searchBox = document.getElementById('searchBox');
+const clearBtn = document.getElementById('clearBtn');
+const resultsEl = document.getElementById('results');
+const resultCountEl = document.getElementById('resultCount');
+const filterLabelEl = document.getElementById('filterLabel');
+const chipsEl = document.getElementById('chips');
+
+let activeCategory = null;
+
+function renderChips(){
+  chipsEl.innerHTML = '';
+  categories.forEach(cat => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (activeCategory === cat ? ' active' : '');
+    chip.textContent = cat;
+    chip.onclick = () => {
+      activeCategory = activeCategory === cat ? null : cat;
+      renderChips();
+      renderResults();
+    };
+    chipsEl.appendChild(chip);
+  });
+}
+
+function highlight(text, query){
+  if(!query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if(idx === -1) return text;
+  return text.slice(0, idx) + '<mark>' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+}
+
+function renderResults(){
+  const q = searchInput.value.trim().toLowerCase();
+  searchBox.classList.toggle('has-text', q.length > 0);
+
+  let filtered = DATA.filter(d => {
+    const matchesQuery = !q || (d.layanan + ' ' + d.kategori + ' ' + d.subkategori).toLowerCase().includes(q);
+    const matchesCat = !activeCategory || d.kategori === activeCategory;
+    return matchesQuery && matchesCat;
+  });
+
+  resultCountEl.textContent = filtered.length;
+  filterLabelEl.textContent = activeCategory ? 'Kategori: ' + activeCategory : '';
+
+  resultsEl.innerHTML = '';
+
+  if(filtered.length === 0){
+    resultsEl.innerHTML = '<div class="empty"><div class="big">Layanan tidak ditemukan</div>Coba kata kunci lain, misalnya bagian dari nama layanan.</div>';
+    return;
+  }
+
+  // group by kategori, preserve original order
+  const groups = [];
+  const groupIndex = {};
+  filtered.forEach(item => {
+    if(!(item.kategori in groupIndex)){
+      groupIndex[item.kategori] = groups.length;
+      groups.push({kategori: item.kategori, items: []});
+    }
+    groups[groupIndex[item.kategori]].items.push(item);
+  });
+
+  groups.forEach(g => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'group';
+
+    const title = document.createElement('div');
+    title.className = 'group-title';
+    title.innerHTML = '<span>' + g.kategori.toUpperCase() + '</span><span class="n">' + g.items.length + '</span>';
+    groupDiv.appendChild(title);
+
+    g.items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      const showSub = item.subkategori && item.subkategori.toUpperCase() !== item.kategori.toUpperCase() && !g.kategori.toUpperCase().includes(item.subkategori.toUpperCase());
+      row.innerHTML =
+        '<div class="name">' + highlight(item.layanan, q) +
+          (showSub ? '<span class="sub-label">' + item.subkategori + '</span>' : '') +
+        '</div>' +
+        '<div class="price">' + fmt(item.tarif) + '</div>';
+      groupDiv.appendChild(row);
+    });
+
+    resultsEl.appendChild(groupDiv);
+  });
+}
+
+searchInput.addEventListener('input', renderResults);
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  searchInput.focus();
+  renderResults();
+});
+
+renderChips();
+renderResults();
+</script>
+</body>
+</html>
